@@ -3,6 +3,7 @@
 ## Course Information
 
 Course: Data Problems (DATA 4380) at UTA
+
 Group Members:
 1. Isabela Alaniz
 2. Tsion Sehene
