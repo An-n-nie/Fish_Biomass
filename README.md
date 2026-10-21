@@ -123,7 +123,7 @@ Reef/location features alone:
 
 3. Run the notebook:
    ```
-   jupyter notebook DataProblems_Project1_Final__3_.ipynb
+   jupyter notebook DataProblems_Project1_Final.ipynb
    ```
 
 4. The notebook will:
@@ -151,16 +151,28 @@ Baseline: Dummy regressor predicting mean biomass for all samples (R²=0, MAE=0.
 3. Feature importance shows correlation, not causation
 4. After one-hot encoding, categorical variables (especially species with 110 categories) increase feature dimensionality to 190
 
+## Why Overfitting Occurred
+
+The high R² values (0.95+) in early analysis were due to data leakage. The biomass formula is:
+
+biomass = a_ord * (size^b_pen) * quantity / (1000 * 60 * 10)
+
+We kept the features that directly appear in this formula (size, quantity, and species with their a_ord and b_pen coefficients). The model could reverse-engineer the formula rather than learning actual predictive patterns. This explains the overfitting.
+
+When we removed a_ord and b_pen but kept size, quantity, and species, the model still achieved R²=0.74, confirming it was reconstructing the known formula.
+
 ## Conclusions
 
 1. Fish biomass can be predicted with R²=0.7613 using biological and reef characteristics
-2. Biological features (species, size, quantity) are dominant predictors
+2. Biological features (species, size, quantity) are dominant predictors because they are components of the biomass calculation formula
 3. Reef location characteristics alone provide zero predictive value
 4. Tree-based models (XGBoost, Gradient Boosting) substantially outperform linear models
 5. PCA dimensionality reduction reduces performance for tree-based models
 6. Hyperparameter tuning can hurt test performance if validated only on training data
+7. Overfitting occurs when features directly used in the target calculation are included as predictors
 
 ## Future Work
 
-- Test advanced feature engineering techniques
+- Apply log transformation to target variable
 - Investigate species-specific patterns
+- Compare models on data with transformed targets
