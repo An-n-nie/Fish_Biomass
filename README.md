@@ -113,29 +113,43 @@ With only 2 features (size + quantity):
 Reef/location features alone:
 - R²: -0.0424 (worse than baseline)
 
+## Repository Structure
+
+/tabular/
+  - DataProblems_Project1_Final__3_.ipynb (Primary Analysis)
+  - Fish_Biomass_Investigation.ipynb (Investigation Analysis)
+  - fish_data.csv (Dataset)
+
 ## How to Run the Code
 
 1. Install required libraries:
    ```
-   pip install pandas scikit-learn xgboost numpy matplotlib
+   pip install pandas scikit-learn xgboost numpy matplotlib seaborn
    ```
 
-2. Place fish_data.csv in the working directory
+2. Place fish_data.csv in the /tabular/ directory
 
-3. Run the notebook:
+3. Run the primary notebook:
    ```
-   jupyter notebook DataProblems_Project1_Final.ipynb
+   jupyter notebook DataProblems_Project1_Final__3_.ipynb
    ```
-
-4. The notebook will:
+   This notebook will:
    - Load and explore the data
-   - Perform train-test split
-   - Preprocess features
-   - Train all 8 models
-   - Compare performance on test set
-   - Conduct 5-fold cross-validation
+   - Perform EDA (Exploratory Data Analysis)
+   - Perform train-test split (80/20)
+   - Preprocess features (StandardScaler, OneHotEncoder)
+   - Train 8 model variants (4 models, with/without PCA)
+   - Compare performance on held-out test set
+   - Conduct 5-fold cross-validation on training data
    - Analyze feature importance
-   - Test feature subsets
+   - Test feature subsets to identify key predictors
+   - Demonstrate hyperparameter tuning and its effects
+
+4. Run the investigation notebook (optional):
+   ```
+   jupyter notebook Fish_Biomass_Investigation.ipynb
+   ```
+   This notebook explores model performance when all biomass formula components are removed, showing the impact of data leakage on predictive power.
 
 ## Model Evaluation Metrics
 
@@ -152,15 +166,46 @@ Baseline: Dummy regressor predicting mean biomass for all samples (R²=0, MAE=0.
 3. Feature importance shows correlation, not causation
 4. After one-hot encoding, categorical variables (especially species with 110 categories) increase feature dimensionality to 190
 
-## Why Overfitting Occurred
+## Two Analysis Approaches
 
-The high R² values (0.95+) in early analysis were due to data leakage. The biomass formula is:
+To understand the impact of data leakage, we conducted two separate analyses:
 
-biomass = a_ord * (size^b_pen) * quantity / (1000 * 60 * 10)
+### Analysis 1: Primary Analysis (DataProblems_Project1_Final__3_.ipynb)
 
-We kept the features that directly appear in this formula (size, quantity, and species with their a_ord and b_pen coefficients). The model could reverse-engineer the formula rather than learning actual predictive patterns. This explains the overfitting.
+This notebook kept biological features that are components of the biomass formula:
+- Kept: size, quantity, species (with their a_ord and b_pen coefficients)
+- Removed: a_ord and b_pen only
 
-When we removed a_ord and b_pen but kept size, quantity, and species, the model still achieved R²=0.74, confirming it was reconstructing the known formula.
+Results:
+- Best Model: XGBoost
+- Test R²: 0.7613
+- Test MAE: 0.0066 kg
+- Test RMSE: 0.0359 kg
+
+The model achieved strong performance because it could use the formula components to predict biomass.
+
+### Analysis 2: Investigation Analysis (Fish_Biomass_Investigation.ipynb)
+
+This notebook investigated whether models have predictive power when ALL formula components are removed:
+- Removed: a_ord, b_pen, size, quantity
+- Kept: only reef characteristics and species taxonomy
+
+Results (Best Model: Linear Regression):
+- Test R²: 0.2469
+- Test MAE: 0.0244 kg
+- Test RMSE: 0.0638 kg
+
+With only environmental features, model performance dropped significantly.
+
+### Comparison: Impact of Data Leakage
+
+| Feature Set | R² Score | Interpretation |
+|------------|----------|-----------------|
+| All data with leakage | 0.95+ | Model reconstructs biomass formula |
+| Keep size + quantity + species | 0.7613 | Strong predictions from formula components |
+| Only reef characteristics | 0.2469 | Weak predictions from environment alone |
+
+This progression clearly shows that the biomass formula components (size, quantity, species) drive most of the predictive power. Environmental location features alone provide minimal predictive signal.
 
 ## Conclusions
 
