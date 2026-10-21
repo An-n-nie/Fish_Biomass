@@ -170,7 +170,7 @@ Baseline: Dummy regressor predicting mean biomass for all samples (R²=0, MAE=0.
 
 To understand the impact of data leakage, we conducted two separate analyses:
 
-### Analysis 1: Primary Analysis (DataProblems_Project1_Final__3_.ipynb)
+### Analysis 1: Primary Analysis (DataProblems_Project1_Final1.ipynb)
 
 This notebook kept biological features that are components of the biomass formula:
 - Kept: size, quantity, species (with their a_ord and b_pen coefficients)
