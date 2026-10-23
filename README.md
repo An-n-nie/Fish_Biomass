@@ -131,7 +131,7 @@ Reef/location features alone:
 
 3. Run the primary notebook:
    ```
-   jupyter notebook DataProblems_Project1_Final__3_.ipynb
+   jupyter notebook DataProblems_Project1.ipynb
    ```
    This notebook will:
    - Load and explore the data
